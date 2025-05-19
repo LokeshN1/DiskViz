@@ -131,6 +131,7 @@ const DiskVisualizer = ({ path = [], diskSize = 199, currentStep, onStepChange, 
         onStepChange={onStepChange}
         seekCount={seekCount}
       />
+
     </div>
   );
 };
