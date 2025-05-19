@@ -3,13 +3,13 @@ import { useState } from 'react';
 import DiskTimingCalculator from './DiskTimingCalculator';
 import { motion, animate } from 'framer-motion';
 
-
 const componentDescriptions = {
   platter: 'Platters: The circular disks where data is stored.',
   track: 'Tracks: The concentric rings on each platter that store data.',
   head: 'Read/Write Head: Reads and writes data on the tracks.',
   arm: 'Actuator Arm: Holds the read/write head and moves it across the platter.',
-  spindle: 'Spindle: The axis that the platters rotate around.'
+  spindle: 'Spindle: The axis that the platters rotate around.',
+  sector: 'Sector: The smallest unit of data storage on a track.'
 };
 
 const DiskPlatterVisualization = ({ numberOfPlatters, tracksPerPlatter = 5 }) => {
@@ -19,10 +19,11 @@ const DiskPlatterVisualization = ({ numberOfPlatters, tracksPerPlatter = 5 }) =>
   const [activeTrack, setActiveTrack] = useState(null);
   const [totalSeekTime, setTotalSeekTime] = useState(0);
   const [hoverText, setHoverText] = useState('');
+  const [sectorsPerTrack, setSectorsPerTrack] = useState(8);
 
-  const platterHeight = 70;
-  const platterWidth = 350;
-  const spacing = 30;
+  const platterHeight = 100;
+  const platterWidth = 450;
+  const spacing = 40;
   const totalHeight = (numberOfPlatters * (platterHeight + spacing));
   const trackWidth = (platterWidth/2 - 30) / tracksPerPlatter;
 
@@ -57,35 +58,58 @@ const DiskPlatterVisualization = ({ numberOfPlatters, tracksPerPlatter = 5 }) =>
     });
   };
 
-  const generateTracks = (cx, cy, rx, ry, numTracks) => {
-    return Array.from({ length: numTracks }).map((_, i) => {
-      const scale = (i + 1) / numTracks;
-      return (
-        <ellipse
-          key={i}
-          cx={cx}
-          cy={cy}
-          rx={rx * scale}
-          ry={ry * scale}
-          fill="none"
-          stroke={activeTrack === i ? "#4CAF50" : "#999"}
-          strokeWidth={activeTrack === i ? "2" : "1"}
-          className={activeTrack === i ? "animate-pulse" : ""}
-          onMouseEnter={() => setHoverText(componentDescriptions.track)}
-          onMouseLeave={() => setHoverText('')}
-        />
-      );
-    });
-  };
+  // Generate sectors for a given track
+  const generateEllipticalSectors = (cx, cy, rx, ry, numSectors) => {
+  return Array.from({ length: numSectors }).map((_, i) => {
+    const startAngle = (i * 2 * Math.PI) / numSectors;
+    const endAngle = ((i + 1) * 2 * Math.PI) / numSectors;
+
+    // Elliptical parametric equations
+    const x1 = cx + rx * Math.cos(startAngle);
+    const y1 = cy + ry * Math.sin(startAngle);
+    const x2 = cx + rx * Math.cos(endAngle);
+    const y2 = cy + ry * Math.sin(endAngle);
+
+    // Large arc flag is always 0 since sector < 180deg
+    return (
+      <path
+        key={i}
+        d={`
+          M ${cx} ${cy}
+          L ${x1} ${y1}
+          A ${rx} ${ry} 0 0 1 ${x2} ${y2}
+          Z
+        `}
+        fill="rgba(59,130,246,0.08)"
+        stroke="#222"
+        strokeWidth="0.8"
+        onMouseEnter={() => setHoverText(componentDescriptions.sector)}
+        onMouseLeave={() => setHoverText('')}
+      />
+    );
+  });
+};
 
   return (
     <div className="relative">
+      <div className="mb-2">
+        <label className="text-sm font-medium mr-2">Sectors per Track:</label>
+        <input
+          type="number"
+          min="2"
+          max="32"
+          value={sectorsPerTrack}
+          onChange={e => setSectorsPerTrack(Number(e.target.value))}
+          className="w-16 px-2 py-1 border rounded"
+        />
+      </div>
       <svg 
         width={platterWidth + 100} 
         height={totalHeight + 50}
         className="mx-auto"
-         style={{ marginLeft: '100px' }} 
+        style={{ marginLeft: '100px' }}
       >
+        {/* Spindle */}
         <line 
           x1={platterWidth/2} 
           y1={0} 
@@ -97,6 +121,7 @@ const DiskPlatterVisualization = ({ numberOfPlatters, tracksPerPlatter = 5 }) =>
           onMouseLeave={() => setHoverText('')}
         />
 
+        {/* Arm Assembly Base */}
         <line 
           x1={platterWidth + 20} 
           y1={0} 
@@ -110,6 +135,7 @@ const DiskPlatterVisualization = ({ numberOfPlatters, tracksPerPlatter = 5 }) =>
 
         {Array.from({ length: numberOfPlatters }).map((_, index) => (
           <g key={index} transform={`translate(0, ${index * (platterHeight + spacing)})`}>
+            {/* Platter */}
             <ellipse
               cx={platterWidth/2}
               cy={platterHeight/2}
@@ -120,13 +146,32 @@ const DiskPlatterVisualization = ({ numberOfPlatters, tracksPerPlatter = 5 }) =>
               onMouseEnter={() => setHoverText(componentDescriptions.platter)}
               onMouseLeave={() => setHoverText('')}
             />
-            {generateTracks(
-              platterWidth/2, 
-              platterHeight/2, 
-              platterWidth/2 - 10, 
-              platterHeight/2 - 5, 
-              tracksPerPlatter
-            )}
+            {/* Tracks with sectors */}
+            {Array.from({ length: tracksPerPlatter }).map((_, trackIdx) => {
+  const scale = (trackIdx + 1) / tracksPerPlatter;
+  const rx = (platterWidth/2 - 10) * scale;
+  const ry = (platterHeight/2 - 5) * scale;
+  return (
+    <g key={trackIdx}>
+      {/* Sectors for this elliptical track */}
+      {generateEllipticalSectors(platterWidth/2, platterHeight/2, rx, ry, sectorsPerTrack)}
+      {/* Track outline */}
+      <ellipse
+        cx={platterWidth/2}
+        cy={platterHeight/2}
+        rx={rx}
+        ry={ry}
+        fill="none"
+        stroke={activeTrack === trackIdx ? "#4CAF50" : "#999"}
+        strokeWidth={activeTrack === trackIdx ? "2" : "1"}
+        className={activeTrack === trackIdx ? "animate-pulse" : ""}
+        onMouseEnter={() => setHoverText(componentDescriptions.track)}
+        onMouseLeave={() => setHoverText('')}
+      />
+    </g>
+  );
+})}
+            {/* Animated Read/Write Head */}
             <motion.g
               animate={{ translateX: headPosition * trackWidth }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
