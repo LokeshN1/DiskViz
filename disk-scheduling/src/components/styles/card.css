@@ -148,3 +148,23 @@
 .animate-fade-in-up {
   animation: fade-in-up 0.8s cubic-bezier(0.23, 1, 0.32, 1);
 }
+
+@keyframes sector-flash {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(2); }
+  100% { filter: brightness(1); }
+}
+
+.sector-flash {
+  animation: sector-flash 0.5s ease-in-out;
+}
+
+@keyframes read-indicator {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.read-indicator {
+  animation: read-indicator 0.5s ease-in-out infinite;
+}

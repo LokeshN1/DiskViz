@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import DiskTimingGraph from './DiskTimingGraph'; // ✅ Import the graph component
 
 const DiskTimingCalculator = () => {
   const [diskParams, setDiskParams] = useState({
@@ -17,17 +18,15 @@ const DiskTimingCalculator = () => {
     totalTime: 0
   });
 
+  const [totalTimeHistory, setTotalTimeHistory] = useState([]);
+ // ✅ Seek time history state
+
   const calculateTimings = useCallback(() => {
     const { totalTracks, headMovementTime, rotationSpeed, sectorsPerTrack, bytesPerSector, bytesToTransfer } = diskParams;
 
-    // Average Seek Time = (1/3) * totalTracks * head movement time
     const avgSeekTime = (totalTracks / 3) * headMovementTime;
-
-    // Rotational Latency = (1/2) * time for one rotation
-    const msPerRotation = (60 * 1000) / rotationSpeed; // RPM to ms
+    const msPerRotation = (60 * 1000) / rotationSpeed;
     const avgRotationalLatency = msPerRotation / 2;
-
-    // Transfer Time = (bytesToTransfer / bytesPerTrack) * time per rotation
     const bytesPerTrack = sectorsPerTrack * bytesPerSector;
     const transferTime = (msPerRotation * bytesToTransfer) / bytesPerTrack;
 
@@ -39,6 +38,13 @@ const DiskTimingCalculator = () => {
       transferTime,
       totalTime
     });
+
+    setTotalTimeHistory(prev => {
+  const newHistory = [...prev, totalTime];
+  return newHistory.length > 100 ? newHistory.slice(newHistory.length - 100) : newHistory;
+});
+
+ // ✅ Append new seek time to history
   }, [diskParams]);
 
   useEffect(() => {
@@ -110,6 +116,12 @@ const DiskTimingCalculator = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* ✅ Seek Time Graph */}
+      <div className="mt-10">
+        <h3 className="text-xl font-semibold mb-4">Total Access Time Trend</h3>
+        <DiskTimingGraph seekTimes={totalTimeHistory} />
       </div>
     </div>
   );

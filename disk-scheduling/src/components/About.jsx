@@ -4,28 +4,28 @@ import ayushImg from './images/ayush.jpg';
 import lokeshImg from './images/lokesh.jpg';
 
 const team = [
+   {
+    name: 'Ayush Saklani',
+    course: 'B.Tech  Computer Science and Engineering (CSE) ',
+    university: 'Graphic Era Deemed to be University',
+    section: 'Section A',
+    rollno: '2021156',
+    img: ayushImg,
+  },
   {
     name: 'Aman Negi',
-    course: 'B.Tech Computer Science',
-    section: 'Section B',
+    course: 'B.Tech  Computer Science and Engineering (CSE)',
     university: 'Graphic Era Deemed to be University',
+    section: 'Section B',
     rollno: '2021076',
     img: amanImg,
   },
   {
-    name: 'Ayush Saklani',
-    course: 'B.Tech Computer Science',
-    section: 'Section A',
-    university: 'Graphic Era Deemed to be University',
-    rollno: '2021075',
-    img: ayushImg,
-  },
-  {
     name: 'Lokesh Negi',
-    course: 'B.Tech Computer Science',
-    section: 'Section AR-Q',
+    course: 'B.Tech  Computer Science and Engineering (CSE)',
     university: 'Graphic Era Deemed to be University',
-    rollno: '2021097',
+    section: 'Section AR-Q',
+    rollno: '2022036',
     img: lokeshImg,
   },
 ];
@@ -72,9 +72,9 @@ const About = () => (
             />
           </div>
           <h2 className="card-title text-2xl font-bold text-indigo-800 mb-1">{member.name}</h2>
-          <div className="text-gray-700 text-lg mb-1 font-medium">{member.course}</div>
+          <div className="text-gray-600 text-lg mb-1 font-medium">{member.course}</div>
+          <div className="text-gray-700 text-lg mb-1 font-medium">{member.university}</div>
           <div className="text-gray-600 mb-1">{member.section}</div>
-          <div className="text-gray-600 mb-1">{member.university}</div>
           <div className="text-indigo-700 font-semibold mb-2">{member.rollno}</div>
         </div>
       ))}
