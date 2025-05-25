@@ -7,6 +7,8 @@ import { FileSystem, File } from './models/FileSystem';
 import FileSystemVisualizer from './components/FileSystemVisualizer';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import DiskLayout from './components/DiskLayout';
+import Home from './components/Home';
+import About from './components/About';
 import './App.css';
 
 function App() {
@@ -83,14 +85,17 @@ useEffect(() => {
     }
   };
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={
+  <Router>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route
+        path="/simulator"
+        element={
           <div className="min-h-screen bg-gray-100 py-8 px-4">
             <div className="max-w-6xl mx-auto">
               <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Disk Scheduling Algorithm Simulator</h1>
-                <Link 
+                <Link
                   to="/disk-layout"
                   className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                 >
@@ -124,14 +129,19 @@ useEffect(() => {
               </div>
             </div>
           </div>
-        } />
-        <Route 
-          path="/disk-layout" 
-          element={<DiskLayout fileSystem={fileSystem} />} 
-        />
-      </Routes>
-    </Router>
-  );
+        }
+      />
+      <Route
+        path="/disk-layout"
+        element={<DiskLayout fileSystem={fileSystem} />}
+      />
+      <Route
+        path="/about"
+        element={<About />}
+      />
+    </Routes>
+  </Router>
+);
 }
 
 export default App;
