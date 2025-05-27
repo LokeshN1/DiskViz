@@ -37,7 +37,7 @@ const Home = () => (
             Disk Scheduling Simulator
           </h2>
           <p className="card-content mb-10 text-lg text-center text-gray-700">
-            Visualize and compare disk scheduling algorithms interactively with step-by-step animations and insights.
+            Visualize and compare the disk scheduling algorithms interactively with step-by-step animations and insights.
           </p>
           <Link
             to="/simulator"
