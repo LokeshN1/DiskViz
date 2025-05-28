@@ -17,7 +17,7 @@ const Comparison = ({ requests, startPosition, currentAlgorithm }) => {
       const look = lookAlgorithm(requests, startPosition);
       const clook = clookAlgorithm(requests, startPosition);
 
-      const labels = ['FCFS', 'SSTF', 'SCAN', 'C-SCAN', 'LOOK', 'C-LOOK'];
+      const labels = ['FCFS', 'SSTF', 'SCAN', 'C SCAN', 'LOOK', 'C LOOK'];
       const seekCounts = [fcfs.seekCount, sstf.seekCount, scan.seekCount, cscan.seekCount, look.seekCount, clook.seekCount];
 
       const backgroundColor = labels.map(label =>
